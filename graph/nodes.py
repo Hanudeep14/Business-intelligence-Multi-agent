@@ -10,7 +10,6 @@ client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 MODEL  = "llama-3.3-70b-versatile"
 
 
-# ─── LLM Helper ─────────────────────────────────────────────────────────────
 def llm(system: str, user: str, temperature: float = 0.7) -> str:
     response = client.chat.completions.create(
         model=MODEL,
@@ -23,11 +22,6 @@ def llm(system: str, user: str, temperature: float = 0.7) -> str:
     return response.choices[0].message.content.strip()
 
 
-# ════════════════════════════════════════════════════════════════════════════
-#  LAYER 1 — MANAGER AGENT
-#  Understands the goal, creates the overall research plan,
-#  assigns tasks to each supervisor
-# ════════════════════════════════════════════════════════════════════════════
 def manager_node(state: dict) -> dict:
     company = state["company"]
 
@@ -53,11 +47,6 @@ def manager_node(state: dict) -> dict:
     return {"research_plan": plan}
 
 
-# ════════════════════════════════════════════════════════════════════════════
-#  LAYER 2A — RESEARCH SUPERVISOR
-#  Reads the manager's plan, breaks it into specific tasks for
-#  the Web Search Worker and News Worker
-# ════════════════════════════════════════════════════════════════════════════
 def research_supervisor_node(state: dict) -> dict:
     company = state["company"]
     plan    = state["research_plan"]
@@ -84,10 +73,6 @@ def research_supervisor_node(state: dict) -> dict:
     return {"research_tasks": tasks}
 
 
-# ════════════════════════════════════════════════════════════════════════════
-#  LAYER 3A — WORKER 1: Web Search Worker
-#  Searches the web using the first research task
-# ════════════════════════════════════════════════════════════════════════════
 def web_search_worker_node(state: dict) -> dict:
     query   = state["research_tasks"][0]
     results = search_web(query, max_results=3)
@@ -100,10 +85,6 @@ def web_search_worker_node(state: dict) -> dict:
     return {"web_research": summary}
 
 
-# ════════════════════════════════════════════════════════════════════════════
-#  LAYER 3A — WORKER 2: News Worker
-#  Fetches and summarizes the latest news
-# ════════════════════════════════════════════════════════════════════════════
 def news_worker_node(state: dict) -> dict:
     query   = state["research_tasks"][1]
     results = search_web(query, max_results=3)
@@ -116,11 +97,6 @@ def news_worker_node(state: dict) -> dict:
     return {"news_research": summary}
 
 
-# ════════════════════════════════════════════════════════════════════════════
-#  LAYER 2B — ANALYSIS SUPERVISOR
-#  Reads research outputs and plans tasks for
-#  the Financial Worker and Competitor Worker
-# ════════════════════════════════════════════════════════════════════════════
 def analysis_supervisor_node(state: dict) -> dict:
     company      = state["company"]
     web_research = state["web_research"]
@@ -151,10 +127,6 @@ def analysis_supervisor_node(state: dict) -> dict:
     return {"analysis_tasks": tasks}
 
 
-# ════════════════════════════════════════════════════════════════════════════
-#  LAYER 3B — WORKER 3: Financial Analysis Worker
-#  Searches for and analyzes financial metrics
-# ════════════════════════════════════════════════════════════════════════════
 def financial_worker_node(state: dict) -> dict:
     query   = state["analysis_tasks"][0]
     results = search_web(query, max_results=3)
@@ -171,10 +143,6 @@ def financial_worker_node(state: dict) -> dict:
     return {"financial_analysis": analysis}
 
 
-# ════════════════════════════════════════════════════════════════════════════
-#  LAYER 3B — WORKER 4: Competitor Analysis Worker
-#  Finds and analyzes key competitors
-# ════════════════════════════════════════════════════════════════════════════
 def competitor_worker_node(state: dict) -> dict:
     query   = state["analysis_tasks"][1]
     results = search_web(query, max_results=3)
@@ -191,11 +159,6 @@ def competitor_worker_node(state: dict) -> dict:
     return {"competitor_analysis": analysis}
 
 
-# ════════════════════════════════════════════════════════════════════════════
-#  LAYER 2C — WRITER SUPERVISOR
-#  Reads all research + analysis, plans the writing tasks for
-#  the Report Writer and Executive Summary Worker
-# ════════════════════════════════════════════════════════════════════════════
 def writer_supervisor_node(state: dict) -> dict:
     company = state["company"]
 
@@ -207,10 +170,6 @@ def writer_supervisor_node(state: dict) -> dict:
     return {"writing_tasks": tasks}
 
 
-# ════════════════════════════════════════════════════════════════════════════
-#  LAYER 3C — WORKER 5: Full Report Writer
-#  Synthesizes everything into a detailed Markdown report
-# ════════════════════════════════════════════════════════════════════════════
 def report_writer_node(state: dict) -> dict:
     company  = state["company"]
     sections = {
@@ -239,10 +198,6 @@ def report_writer_node(state: dict) -> dict:
     return {"full_report": report}
 
 
-# ════════════════════════════════════════════════════════════════════════════
-#  LAYER 3C — WORKER 6: Executive Summary Writer
-#  Condenses the full report into a sharp executive summary
-# ════════════════════════════════════════════════════════════════════════════
 def executive_summary_node(state: dict) -> dict:
     company     = state["company"]
     full_report = state["full_report"]

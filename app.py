@@ -4,7 +4,6 @@ from graph.workflow import build_graph
 
 load_dotenv()
 
-# ─── Page Config ─────────────────────────────────────────────────────────────
 st.set_page_config(
     page_title="BI Intelligence Agent",
     page_icon="📊",
@@ -12,7 +11,6 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ─── CSS ─────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
@@ -78,7 +76,6 @@ html, body, [class*="css"] { font-family: 'IBM Plex Sans', sans-serif; }
 </style>
 """, unsafe_allow_html=True)
 
-# ─── Sidebar — Architecture Map ───────────────────────────────────────────────
 with st.sidebar:
     st.markdown("### 🏗️ Agent Architecture")
     st.markdown("---")
@@ -112,7 +109,6 @@ with st.sidebar:
     st.code("LangGraph · 10 Agents\nGroq · Llama 3.3 70B\nTavily · Web Search\nStreamlit · UI", language="text")
 
 
-# ─── Main UI ─────────────────────────────────────────────────────────────────
 st.markdown('<div class="hero-title">📊 Business Intelligence Agent</div>', unsafe_allow_html=True)
 st.markdown('<div class="hero-sub">3-Layer Multi-Agent Orchestration · Manager → Supervisors → Workers · Powered by LangGraph</div>', unsafe_allow_html=True)
 
@@ -128,7 +124,6 @@ with c2:
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# ─── Run Graph ───────────────────────────────────────────────────────────────
 if run_btn and company.strip():
 
     with st.status("🤖 Multi-Agent Workflow Running...", expanded=True) as status:
@@ -149,7 +144,6 @@ if run_btn and company.strip():
 
     st.markdown("---")
 
-    # ── Metrics Row
     m1, m2, m3, m4 = st.columns(4)
     with m1:
         st.markdown('<div class="metric-card"><div class="metric-val">10</div><div class="metric-lbl">Agents Run</div></div>', unsafe_allow_html=True)
@@ -162,7 +156,6 @@ if run_btn and company.strip():
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # ── Executive Summary (top — most important)
     st.markdown("### ⚡ Executive Summary")
     st.markdown('<div class="exec-box">', unsafe_allow_html=True)
     st.markdown(result.get("executive_summary", ""))
@@ -170,11 +163,9 @@ if run_btn and company.strip():
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # ── Manager's Research Plan
     with st.expander("📋 Manager's Research Plan (Layer 1 output)"):
         st.markdown(result.get("research_plan", ""))
 
-    # ── Research Worker Outputs
     with st.expander("🌐 Web Research + 📰 News (Layer 3 — Research Workers)"):
         col1, col2 = st.columns(2)
         with col1:
@@ -184,7 +175,6 @@ if run_btn and company.strip():
             st.markdown("**📰 Latest News**")
             st.markdown(result.get("news_research", ""))
 
-    # ── Analysis Worker Outputs
     with st.expander("💰 Financial + 🏢 Competitor Analysis (Layer 3 — Analysis Workers)"):
         col1, col2 = st.columns(2)
         with col1:
@@ -196,13 +186,11 @@ if run_btn and company.strip():
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # ── Full Report
     st.markdown("### 📄 Full Business Intelligence Report")
     st.markdown('<div class="report-box">', unsafe_allow_html=True)
     st.markdown(result.get("full_report", ""))
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # ── Download
     st.markdown("<br>", unsafe_allow_html=True)
     full_output = (
         f"# Business Intelligence Report: {company}\n\n"
